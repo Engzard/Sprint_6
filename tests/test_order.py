@@ -1,85 +1,9 @@
 import pytest
 import allure
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from locators import OrderLocators, MainPageLocators
+from locators import OrderLocators
+from pages.main_page import MainPage
+from pages.order_page import OrderPage
 
-class BasePage:
-    def __init__(self, driver):
-        self.driver = driver
-
-    def go_to_site(self, url):
-        self.driver.get(url)
-
-    def wait_for_element(self, locator, timeout=10):
-        return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-
-    def wait_for_clickable(self, locator, timeout=10):
-        return WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-
-    def click(self, locator):
-        self.wait_for_clickable(locator).click()
-
-    def send_keys(self, locator, text):
-        self.wait_for_element(locator).send_keys(text)
-
-    def clear_and_send_keys(self, locator, text):
-        element = self.wait_for_element(locator)
-        element.clear()
-        element.send_keys(text)
-
-    def get_current_url(self):
-        return self.driver.current_url
-
-    def wait_for_url_contains(self, text, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
-            EC.url_contains(text))
-    def get_text(self, locator, timeout=10):
-        element = self.wait_for_element(locator, timeout)
-        return element.text
-
-class MainPage(BasePage):
-    def click_order_top_button(self):
-        self.click(MainPageLocators.order_top_button)
-    def click_order_bottom_button(self):
-        self.click(MainPageLocators.order_bottom_button)
-
-    def click_scooter_logo(self):
-        self.click(MainPageLocators.scooter_logo)
-
-    def click_yandex_logo(self):
-        self.click(MainPageLocators.yandex_logo)
-
-
-class OrderPage(BasePage):
-    def fill_customer_info(self, name, lastname, address, phone, metro_station):
-        self.send_keys(OrderLocators.name_input, name)
-        self.send_keys(OrderLocators.lastname_input, lastname)
-        self.send_keys(OrderLocators.address_input, address)
-        self.send_keys(OrderLocators.phone_input, phone)
-        self.click(OrderLocators.metro_input)
-        self.click(OrderLocators.get_metro_station(metro_station))
-        self.click(OrderLocators.next_button)
-
-    def fill_rent_info(self, date, period, color, comment):
-        self.clear_and_send_keys(OrderLocators.date_input, date)
-        self.click(OrderLocators.rent_period_dropdown)
-        self.click(OrderLocators.get_rent_period(period))
-        if color == "чёрный жемчуг":
-            self.click(OrderLocators.black_color_checkbox)
-        else:
-            self.click(OrderLocators.grey_color_checkbox)
-        self.send_keys(OrderLocators.comment_input, comment)
-
-    def confirm_order(self):
-        self.wait_for_element(OrderLocators.order_button)
-        self.click(OrderLocators.order_button)
-        self.wait_for_element(OrderLocators.confirm_button)
-        self.click(OrderLocators.confirm_button)
 class TestScooterOrder:
 
     @pytest.mark.parametrize("customer_data", [

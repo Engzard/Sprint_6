@@ -1,11 +1,9 @@
 import pytest
 from selenium import webdriver
+from pages.question_page import QuestionPage
 
-@pytest.fixture
-def scroll_to_question(driver):
-    def _scroll(element):
-        driver.execute_script("arguments[0].scrollIntoView();", element)
-    return _scroll
+
+
 
 @pytest.fixture(scope="class")
 def driver():
@@ -15,6 +13,7 @@ def driver():
 
 @pytest.fixture(scope="class")
 def page(driver):
-    page = MainPage(driver)
+    page = QuestionPage(driver)
     page.open()
+    page.scroll_to_question()
     return page
