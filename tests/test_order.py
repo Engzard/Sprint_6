@@ -1,6 +1,5 @@
 import pytest
 import allure
-from locators import OrderLocators
 from pages.main_page import MainPage
 from pages.order_page import OrderPage
 
@@ -30,14 +29,16 @@ class TestScooterOrder:
         "comment": "Оставить у парадной"
         }
     ])
-    @allure.feature("Оформление заказа(верхняя кнопка)")
-    def test_order_via_top_button(driver, customer_data):
-        main_page = MainPage(driver)
-        order_page = OrderPage(driver)
+    @allure.title("Оформление заказа(верхняя кнопка)")
+    def test_order_via_top_button(self, customer_data):
+        main_page = MainPage(self)
+        order_page = OrderPage(self)
 
-        main_page.go_to_site("https://qa-scooter.praktikum-services.ru/")
-        main_page.click_order_top_button()
-        with allure.step("Заполняем информацию о клиенте(страница 1)"):
+        with allure.step('Открытие главной страницы'):
+            main_page.open()
+        with allure.step('Нажатие верхней кнопки заказа'):
+            main_page.click_order_top_button()
+        with allure.step("Заполнение первой страницы заказа"):
             order_page.fill_customer_info(
                 customer_data["name"],
                 customer_data["lastname"],
@@ -46,7 +47,7 @@ class TestScooterOrder:
                 customer_data["metro"]
             )
 
-        with allure.step("Заполняем информацию о клиенте(страница 2)"):
+        with allure.step('Заполнение второй страницы заказа'):
             order_page.fill_rent_info(
                 customer_data["date"],
                 customer_data["period"],
@@ -54,20 +55,19 @@ class TestScooterOrder:
                 customer_data["comment"]
             )
 
-        with allure.step("Подтверждаем заказ"):
+        with allure.step('Подтверждение заказа'):
             order_page.confirm_order()
-            success_text = order_page.get_text(OrderLocators.success_message)
-            assert success_text == "Заказ оформлен"
+            assert order_page.is_order_successful()
 
-    @allure.feature("Оформление заказа(нижняя кнопка)")
-    def test_order_via_bottom_button(driver, customer_data):
-        main_page = MainPage(driver)
-        order_page = OrderPage(driver)
-
-        main_page.go_to_site("https://qa-scooter.praktikum-services.ru/")
-        main_page.click_order_bottom_button()
-
-        with allure.step("Заполняем информацию о клиенте(страница 1)"):
+    @allure.title("Оформление заказа(нижняя кнопка)")
+    def test_order_via_bottom_button(self, customer_data):
+        main_page = MainPage(self)
+        order_page = OrderPage(self)
+        with allure.step('Открытие главной страницы'):
+            main_page.open()
+        with allure.step('Нажатие нижней кнопки заказа'):
+            main_page.click_order_bottom_button()
+        with allure.step("Заполнение первой страницы заказа"):
             order_page.fill_customer_info(
                 customer_data["name"],
                 customer_data["lastname"],
@@ -76,7 +76,7 @@ class TestScooterOrder:
                 customer_data["metro"]
             )
 
-        with allure.step("Заполняем информацию о клиенте(страница 2)"):
+        with allure.step('Заполнение второй страницы заказа'):
             order_page.fill_rent_info(
                 customer_data["date"],
                 customer_data["period"],
@@ -84,26 +84,24 @@ class TestScooterOrder:
                 customer_data["comment"]
             )
 
-        with allure.step("Подтверждаем заказ"):
+        with allure.step('Подтверждение заказа'):
             order_page.confirm_order()
-            success_text = order_page.get_text(OrderLocators.success_message)
-            assert success_text == "Заказ оформлен"
+            assert order_page.is_order_successful()
+    @allure.title("Редирект по логотипу Самоката")
+    def test_scooter_logo_redirect(self):
+        main_page = MainPage(self)
+        with allure.step('Открытие главной страницы'):
+            main_page.open()
+        with allure.step('Нажатие лого самоката'):
+            main_page.click_scooter_logo()
+        assert main_page.main_page_chek()
 
-    @allure.feature("Редирект по логотипу Самоката")
-    def test_scooter_logo_redirect(driver):
-        main_page = MainPage(driver)
-
-        driver.get("https://qa-scooter.praktikum-services.ru/order")
-        main_page.click_scooter_logo()
-
-        assert main_page.get_current_url() == "https://qa-scooter.praktikum-services.ru/"
-
-    @allure.feature("Редирект по логотипу Яндекса")
-    def test_yandex_logo_redirect(driver):
-        main_page = MainPage(driver)
-
-        main_page.go_to_site("https://qa-scooter.praktikum-services.ru/")
-        main_page.click_yandex_logo()
+    @allure.title("Редирект по логотипу Яндекса")
+    def test_yandex_logo_redirect(self):
+        main_page = MainPage(self)
+        with allure.step('Открытие главной страницы'):
+            main_page.open()
+        with allure.step('Нажатие лого Яндекс'):
+            main_page.click_yandex_logo()
         main_page.wait_for_url_contains("dzen.ru")
-
-        assert driver.current_url == "https://dzen.ru/"
+        assert main_page.dzen_page_chek()

@@ -1,24 +1,19 @@
+import allure
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
 class QuestionPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
-        self.url = "https://qa-scooter.praktikum-services.ru/"
-        self.driver = driver
         self.subheader_locator = (By.CLASS_NAME, "Home_SubHeader__zwi_E")
-
+    @allure.step('Открытие главной страницы')
     def open(self):
         self.go_to_site(self.url)
-
+    @allure.step('Прокрутка к полю вопросов')
     def scroll_to_question(self):
-        subheader = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(self.subheader_locator)
-        )
-        self.driver.execute_script("arguments[0].scrollIntoView();", subheader)
-
+        subheader = self.wait_for_element_presence(self.subheader_locator)
+        self.scroll_to_element(subheader)
+    @allure.step('Нажатие на вопрос')
     def click_question(self, locator):
         self.click(locator)
 

@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
+        self.url = "https://qa-scooter.praktikum-services.ru/"
 
     def scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
@@ -40,3 +41,5 @@ class BasePage:
     def get_text(self, locator, timeout=10):
         element = self.wait_for_element(locator, timeout)
         return element.text
+    def wait_for_element_presence(self, locator, timeout=10):
+        return WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
